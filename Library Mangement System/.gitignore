@@ -1,0 +1,38 @@
+# ## Visual Studio and .NET Ignored Files ##
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Cache Files (IntelliSense/Browser Cache)
+*.ncb
+*.aps
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+ipch/
+
+# Visual Studio User/Solution Folders
+# The .vs folder contains user-specific and machine-specific metadata.
+.vs/
+# The .idea folder is for JetBrains Rider/IntelliJ/etc.
+.idea/
+
+# NuGet Packages
+# Packages should be restored by the build process, not committed.
+[Pp]ackages/
+*.nupkg
+
+# Temporary/Log files
+*.log
+*.tmp
+*.bak
