@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Library_Mangement_System.StaffManagement;
+using System.Security.Cryptography;
 
 namespace Library_Mangement_System
 {
@@ -100,10 +101,34 @@ namespace Library_Mangement_System
             }
         }
 
+        //highlight sidebar button
+
+        private Button _activeSidebarButton = null;
+        private void HighlightSidebarButton(Button selectedButton)
+        {
+            // Reset the previously active button
+            if (_activeSidebarButton != null)
+            {
+                _activeSidebarButton.BackColor = Color.Transparent;
+                _activeSidebarButton.FlatAppearance.BorderSize = 0;
+                _activeSidebarButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
+            }
+
+            // Apply highlight to the new button
+            selectedButton.BackColor = Color.FromArgb(100, 255, 255, 255); // translucent white
+            selectedButton.FlatAppearance.BorderColor = Color.SteelBlue;
+            selectedButton.FlatAppearance.BorderSize = 2;
+            selectedButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+
+            // Update the active button reference
+            _activeSidebarButton = selectedButton;
+        }
+
         //open staffManagement
         private void iconButton1_Click(object sender, EventArgs e)
         {
             openchildform(new StaffManagement());
+            HighlightSidebarButton(iconButton1);
         }
 
         //load dashboard
@@ -131,6 +156,7 @@ namespace Library_Mangement_System
         private void iconButton2_Click(object sender, EventArgs e)
         {
             openchildform(new Books());
+            HighlightSidebarButton(iconButton2);
         }
 
         // settings slide in
@@ -164,6 +190,10 @@ namespace Library_Mangement_System
                 return;
             }
 
+            string hashedOldPassword = HashPassword(oldpassword);
+            string hashedNewPassword = HashPassword(newpassword);
+
+
             try
             {
 
@@ -176,7 +206,7 @@ namespace Library_Mangement_System
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
                     {
                         checkCmd.Parameters.AddWithValue("@username", username);
-                        checkCmd.Parameters.AddWithValue("@Password", oldpassword);
+                        checkCmd.Parameters.AddWithValue("@Password", hashedOldPassword);
 
                         int match = (int)checkCmd.ExecuteScalar();
                         if (match == 0)
@@ -189,7 +219,7 @@ namespace Library_Mangement_System
                     using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                     {
                         updateCmd.Parameters.AddWithValue("@username", username);
-                        updateCmd.Parameters.AddWithValue("@newPassword", newpassword);
+                        updateCmd.Parameters.AddWithValue("@newPassword", hashedNewPassword);
 
                         int rows = updateCmd.ExecuteNonQuery();
                         if (rows > 0)
@@ -214,6 +244,23 @@ namespace Library_Mangement_System
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //hash password
+
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
 
@@ -247,6 +294,11 @@ namespace Library_Mangement_System
                 textBox2.UseSystemPasswordChar = true;
                 pictureBox2.Image = Properties.Resources.eye_4734271;
             }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

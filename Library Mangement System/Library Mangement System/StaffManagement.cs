@@ -23,6 +23,9 @@ namespace Library_Mangement_System
             string email = textBox3.Text.Trim();
             string address = textBox4.Text.Trim();
 
+            string hashedPassword = HashPassword(password);
+
+
             if (string.IsNullOrEmpty(username) ||
                 string.IsNullOrEmpty(password) ||
                 string.IsNullOrEmpty(email) ||
@@ -55,7 +58,7 @@ namespace Library_Mangement_System
                     using SqlCommand cmd = new SqlCommand(query, conn);
                     {
                         cmd.Parameters.AddWithValue("@username", username);
-                        cmd.Parameters.AddWithValue("@password", password);
+                        cmd.Parameters.AddWithValue("@password", hashedPassword);
                         cmd.Parameters.AddWithValue("@Role", role);
                         cmd.Parameters.AddWithValue("@email", email);
                         cmd.Parameters.AddWithValue("@address", address);
@@ -95,6 +98,9 @@ namespace Library_Mangement_System
                     return;
                 }
 
+                string hashedPassword = HashPassword(password);
+
+
                 string connString = ConfigurationManager.ConnectionStrings["library"].ConnectionString;
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
@@ -109,7 +115,7 @@ namespace Library_Mangement_System
                             updateCmd.Parameters.AddWithValue("@staffID", staffID);
                             updateCmd.Parameters.AddWithValue("@role", role);
                             updateCmd.Parameters.AddWithValue("@username", username);
-                            updateCmd.Parameters.AddWithValue("@password", password);
+                            updateCmd.Parameters.AddWithValue("@password", hashedPassword);
                             updateCmd.Parameters.AddWithValue("@email", email);
                             updateCmd.Parameters.AddWithValue("@address", address);
                             updateCmd.ExecuteNonQuery();
@@ -244,25 +250,22 @@ namespace Library_Mangement_System
             }
         }
 
-        ////hash password
+        //hash password
 
-        //public static class SecurityHelp
-        //{
-        //    public static string HashPassword(string password)
-        //    {
-        //        using (SHA256 sha256Hash = SHA256.Create())
-        //        {
-        //            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
 
-        //            StringBuilder builder = new StringBuilder();
-        //            for (int i = 0; i < bytes.Length; i++)
-        //            {
-        //                builder.Append(bytes[i].ToString("x2"));
-        //            }
-        //            return builder.ToString();
-        //        }
-        //    }
-        //}
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
 
         private bool PasswordVisible = true;
         private void StaffManagement_Load(object sender, EventArgs e)
