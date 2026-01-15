@@ -47,6 +47,27 @@ namespace Library_Mangement_System
             childFrom.Show();
         }
 
+        //go back to dashboard
+        private void ShowDashboardHome()
+        {
+            if (activeForm != null)
+            {
+                activeForm.Close();
+                activeForm = null;
+            }
+
+            loadDashboardSummary();
+            loadRecentActivity();
+
+            MainPanel.Visible = true;
+            MainPanel.BringToFront();
+            if (_activeSidebarButton != null)
+            {
+                _activeSidebarButton.BackColor = Color.Transparent;
+            }
+        }
+
+
         //Restrict Access
         private void ApplyRoleRestrictions()
         {
@@ -60,15 +81,36 @@ namespace Library_Mangement_System
         //Adjust button layout
         private void AdjustButtonLayout()
         {
-            int yoffset = 10;
-            for (int i = SideBar.Controls.Count - 1; i >= 0; i--)
+            int yoffset = pictureBox1.Bottom + 20;
+            var orderedButtons = new List<Button>
+    {
+        iconButton1,
+        iconButton2,
+        iconButton3,
+        iconButton4,
+        iconButton5,
+        iconButton6,
+        iconButton9,
+        iconButton7,
+        iconButton8
+    };
+
+            foreach (var btn in orderedButtons)
             {
-                if (SideBar.Controls[i] is Button btn && btn.Visible)
+                if (btn.Visible)
                 {
+                    // extra space before Logout
+                    if (btn == iconButton7)
+                    {
+                        yoffset += 60;
+                    }
+
                     btn.Location = new Point(btn.Location.X, yoffset);
                     yoffset += btn.Height + 10;
                 }
             }
+
+
         }
 
         //statistic cards
@@ -85,8 +127,77 @@ namespace Library_Mangement_System
                 {
                     label12.Text = cmd.ExecuteScalar().ToString();
                 }
+
+                // Count borrowed books
+                string queryBorrowed = "SELECT COUNT(*) FROM BorrowedBooks WHERE Status = 'Borrowed'";
+                using (SqlCommand cmd = new SqlCommand(queryBorrowed, conn))
+                {
+                    label16.Text = cmd.ExecuteScalar().ToString();
+                }
+
+                // Count overdue books
+                string queryOverdue = "SELECT COUNT(*) FROM BorrowedBooks WHERE DueDate < GETDATE() AND Status = 'Borrowed'";
+                using (SqlCommand cmd = new SqlCommand(queryOverdue, conn))
+                {
+                    label15.Text = cmd.ExecuteScalar().ToString();
+
+                }
+
+                //count members
+                string queryTotalMembers = "SELECT COUNT(*) FROM members";
+                using (SqlCommand cmd = new SqlCommand(queryTotalMembers, conn))
+                {
+                    label14.Text = cmd.ExecuteScalar().ToString();
+                }
             }
         }
+
+        //recent activity section
+        private void loadRecentActivity()
+        {
+            string connString = ConfigurationManager.ConnectionStrings["library"].ConnectionString;
+
+            // This query grabs the 10 most recent records from BorrowedBooks
+            string query = @"SELECT TOP 10 
+    CASE WHEN Status = 'Borrowed' THEN 'ISSUE' ELSE 'RETURN' END AS Action, 
+    B.title + ' (' + CAST(B.book_ID AS VARCHAR) + ') to ' + M.FullName AS Details, 
+    BorrowDate AS Time 
+FROM BorrowedBooks BB
+JOIN Books B ON BB.book_ID = B.book_ID
+JOIN Members M ON BB.memberID = M.memberID
+ORDER BY BorrowDate DESC";
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    dataGridView1.Rows.Clear();
+
+                    while (reader.Read())
+                    {
+                        string action = reader["Action"].ToString();
+                        string details = reader["Details"].ToString();
+                        string time = Convert.ToDateTime(reader["Time"]).ToString("MMM dd, HH:mm");
+
+                        int rowIndex = dataGridView1.Rows.Add(action, details, time);
+
+                        if (action == "ISSUE")
+                            dataGridView1.Rows[rowIndex].Cells[0].Style.ForeColor = Color.SteelBlue;
+                        else if (action == "RETURN")
+                            dataGridView1.Rows[rowIndex].Cells[0].Style.ForeColor = Color.ForestGreen;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Activity Log Error: " + ex.Message);
+                }
+            }
+        }
+
 
         //center the dashboard
         private void Dashboard_Resize(object sender, EventArgs e)
@@ -106,7 +217,6 @@ namespace Library_Mangement_System
         private Button _activeSidebarButton = null;
         private void HighlightSidebarButton(Button selectedButton)
         {
-            // Reset the previously active button
             if (_activeSidebarButton != null)
             {
                 _activeSidebarButton.BackColor = Color.Transparent;
@@ -114,13 +224,11 @@ namespace Library_Mangement_System
                 _activeSidebarButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
             }
 
-            // Apply highlight to the new button
             selectedButton.BackColor = Color.FromArgb(100, 255, 255, 255); // translucent white
             selectedButton.FlatAppearance.BorderColor = Color.SteelBlue;
             selectedButton.FlatAppearance.BorderSize = 2;
             selectedButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
 
-            // Update the active button reference
             _activeSidebarButton = selectedButton;
         }
 
@@ -136,6 +244,7 @@ namespace Library_Mangement_System
         {
             AdjustButtonLayout();
             loadDashboardSummary();
+            loadRecentActivity();
         }
 
         //logout
@@ -296,7 +405,48 @@ namespace Library_Mangement_System
             }
         }
 
+        //open dashboard
         private void label1_Click(object sender, EventArgs e)
+        {
+            ShowDashboardHome();
+        }
+
+        //open issue form
+        private void iconButton4_Click(object sender, EventArgs e)
+        {
+            openchildform(new Borrow());
+            HighlightSidebarButton(iconButton4);
+        }
+
+        //open members form
+        private void iconButton3_Click(object sender, EventArgs e)
+        {
+            openchildform(new Members());
+            HighlightSidebarButton(iconButton3);
+        }
+
+        //open return form
+        private void iconButton5_Click(object sender, EventArgs e)
+        {
+            openchildform(new Return());
+            HighlightSidebarButton(iconButton5);
+        }
+
+        //open overdue form
+        private void iconButton6_Click(object sender, EventArgs e)
+        {
+            openchildform(new OverDue());
+            HighlightSidebarButton(iconButton6);
+        }
+
+        //open reports form
+        private void iconButton9_Click(object sender, EventArgs e)
+        {
+            openchildform(new Reports());
+            HighlightSidebarButton(iconButton9);
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

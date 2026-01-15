@@ -73,6 +73,16 @@ namespace Library_Mangement_System.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap dashboard_logo {
+            get {
+                object obj = ResourceManager.GetObject("dashboard_logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap eye_18360006 {
             get {
                 object obj = ResourceManager.GetObject("eye_18360006", resourceCulture);
@@ -87,6 +97,26 @@ namespace Library_Mangement_System.Properties {
             get {
                 object obj = ResourceManager.GetObject("eye_4734271", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] library_icon {
+            get {
+                object obj = ResourceManager.GetObject("library_icon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] library_logo {
+            get {
+                object obj = ResourceManager.GetObject("library_logo", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

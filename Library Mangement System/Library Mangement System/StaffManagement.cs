@@ -268,6 +268,8 @@ namespace Library_Mangement_System
         }
 
         private bool PasswordVisible = true;
+
+        //load the form
         private void StaffManagement_Load(object sender, EventArgs e)
         {
             LoadStaff();

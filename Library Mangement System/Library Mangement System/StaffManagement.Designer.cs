@@ -56,6 +56,7 @@
             // 
             // panel1
             // 
+            panel1.AutoScroll = true;
             panel1.BackColor = Color.White;
             panel1.Controls.Add(textBox5);
             panel1.Controls.Add(dataGridView1);
@@ -65,7 +66,7 @@
             panel1.Location = new Point(20, 20);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(25);
-            panel1.Size = new Size(938, 554);
+            panel1.Size = new Size(968, 554);
             panel1.TabIndex = 0;
             // 
             // textBox5
@@ -73,9 +74,9 @@
             textBox5.BackColor = Color.White;
             textBox5.BorderStyle = BorderStyle.FixedSingle;
             textBox5.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            textBox5.Location = new Point(540, 15);
+            textBox5.Location = new Point(518, 14);
             textBox5.Name = "textBox5";
-            textBox5.Size = new Size(360, 34);
+            textBox5.Size = new Size(413, 34);
             textBox5.TabIndex = 15;
             textBox5.TextChanged += textBox5_TextChanged;
             // 
@@ -89,13 +90,13 @@
             dataGridView1.BackgroundColor = Color.FromArgb(248, 249, 250);
             dataGridView1.BorderStyle = BorderStyle.None;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(531, 55);
+            dataGridView1.Location = new Point(509, 54);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowHeadersVisible = false;
             dataGridView1.RowHeadersWidth = 62;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridView1.Size = new Size(382, 474);
+            dataGridView1.Size = new Size(431, 475);
             dataGridView1.TabIndex = 2;
             // 
             // panel2
@@ -114,7 +115,7 @@
             panel2.Controls.Add(comboBox1);
             panel2.Controls.Add(textBox1);
             panel2.Controls.Add(label2);
-            panel2.Location = new Point(25, 70);
+            panel2.Location = new Point(3, 73);
             panel2.Name = "panel2";
             panel2.Size = new Size(500, 350);
             panel2.TabIndex = 1;
@@ -289,7 +290,7 @@
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.FromArgb(41, 128, 185);
-            label1.Location = new Point(25, 25);
+            label1.Location = new Point(9, 25);
             label1.Name = "label1";
             label1.Size = new Size(220, 45);
             label1.TabIndex = 0;
@@ -300,7 +301,7 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(248, 249, 250);
-            ClientSize = new Size(978, 594);
+            ClientSize = new Size(1008, 594);
             Controls.Add(panel1);
             Name = "StaffManagement";
             Padding = new Padding(20);

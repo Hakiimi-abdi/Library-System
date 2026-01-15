@@ -39,21 +39,61 @@ namespace Library_Mangement_System
                 return;
             }
 
-            try
-            {
-                string connString = ConfigurationManager.ConnectionStrings["library"].ConnectionString;
+            string username = textBox1.Text.Trim();
+            string password = textBox2.Text.Trim();
+            string hashedPassword = HashPassword(password);
+            string connString = ConfigurationManager.ConnectionStrings["library"].ConnectionString;
 
-                using (SqlConnection con = new SqlConnection(connString))
+            using (SqlConnection con = new SqlConnection(connString))
+            {
+                try
                 {
                     con.Open();
-                    string query = "select Role from login where username = @username AND password = @password";
+
+                        //Check lock status
+                    string checkLockQuery = "SELECT IsLocked, LastFailedAttempt FROM login WHERE username = @username";
+                    using (SqlCommand lockCmd = new SqlCommand(checkLockQuery, con))
+                    {
+                        lockCmd.Parameters.AddWithValue("@username", username);
+                        using (SqlDataReader lockReader = lockCmd.ExecuteReader())
+                        {
+                            if (lockReader.Read())
+                            {
+                                bool isLocked = (bool)lockReader["IsLocked"];
+                                DateTime? lastAttempt = lockReader["LastFailedAttempt"] as DateTime?;
+
+                                if (isLocked)
+                                {
+                                    if (lastAttempt.HasValue && DateTime.Now.Subtract(lastAttempt.Value).TotalMinutes < 15)
+                                    {
+                                        MessageBox.Show("Your account is temporarily locked. Try again in a few minutes.", "Locked", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        // Auto-unlock
+                                        lockReader.Close();
+                                        string unlockQuery = "UPDATE login SET IsLocked = 0, FailedAttempts = 0 WHERE username = @username";
+                                        using (SqlCommand unlockCmd = new SqlCommand(unlockQuery, con))
+                                        {
+                                            unlockCmd.Parameters.AddWithValue("@username", username);
+                                            unlockCmd.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Username not found.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                    }
+
+                    //Validate
+                    string query = "SELECT Role FROM login WHERE username = @username AND password = @password";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        string username = textBox1.Text.Trim();
-                        string password = textBox2.Text.Trim();
-
-                        string hashedPassword = HashPassword(password);
-
                         cmd.Parameters.AddWithValue("@username", username);
                         cmd.Parameters.AddWithValue("@password", hashedPassword);
 
@@ -61,24 +101,44 @@ namespace Library_Mangement_System
                         if (reader.Read())
                         {
                             string role = reader["Role"].ToString();
+                            reader.Close();
+
+                            // Reset failed attempts
+                            string resetQuery = "UPDATE login SET FailedAttempts = 0, LastFailedAttempt = NULL WHERE username = @username";
+                            using (SqlCommand resetCmd = new SqlCommand(resetQuery, con))
+                            {
+                                resetCmd.Parameters.AddWithValue("@username", username);
+                                resetCmd.ExecuteNonQuery();
+                            }
+
                             this.Hide();
-                            Dashboard dash = new Dashboard(textBox1.Text, role);
+                            Dashboard dash = new Dashboard(username, role);
                             dash.Show();
                         }
                         else
                         {
-                            MessageBox.Show("Incorrect username or password.");
+                            reader.Close();
+
+                            // Increment failed attempts
+                            string updateQuery = @"UPDATE login SET FailedAttempts = FailedAttempts + 1,LastFailedAttempt = GETDATE(),IsLocked = CASE WHEN FailedAttempts + 1 >= 5 THEN 1 ELSE 0 END WHERE username = @username";
+                            using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                            {
+                                updateCmd.Parameters.AddWithValue("@username", username);
+                                updateCmd.ExecuteNonQuery();
+                            }
+
+                            MessageBox.Show("Incorrect username or password. After 5 failed attempts, your account will be locked for 15 minutes.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
                 }
-            }
-            catch (SqlException sqlEx)
-            {
-                MessageBox.Show($"Database error: {sqlEx.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                catch (SqlException sqlEx)
+                {
+                    MessageBox.Show($"Database error: {sqlEx.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

@@ -59,6 +59,7 @@
             // 
             // panel1
             // 
+            panel1.AutoScroll = true;
             panel1.BackColor = Color.White;
             panel1.Controls.Add(textBox7);
             panel1.Controls.Add(dataGridView1);
@@ -113,7 +114,7 @@
             button3.ForeColor = Color.FromArgb(231, 76, 60);
             button3.Location = new Point(180, 0);
             button3.Name = "button3";
-            button3.Size = new Size(80, 35);
+            button3.Size = new Size(83, 35);
             button3.TabIndex = 2;
             button3.Text = "Delete";
             button3.UseVisualStyleBackColor = true;
@@ -126,11 +127,11 @@
             button2.FlatStyle = FlatStyle.Flat;
             button2.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button2.ForeColor = Color.FromArgb(41, 128, 185);
-            button2.Location = new Point(90, 0);
+            button2.Location = new Point(79, 0);
             button2.Name = "button2";
-            button2.Size = new Size(80, 35);
+            button2.Size = new Size(95, 35);
             button2.TabIndex = 1;
-            button2.Text = "Add";
+            button2.Text = "Update";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
@@ -246,7 +247,7 @@
             // 
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
-            comboBox1.Items.AddRange(new object[] { "Fiction", "Non-Fiction", "Romance", "History", "Science", "Science-Fiction", "Technology", "Biography", "Horror", "Thriller", "Mystery" });
+            comboBox1.Items.AddRange(new object[] { "Fiction", "Non-Fiction", "Romance", "History", "Science", "Science Fiction", "Technology", "Biography", "Horror", "Thriller", "Mystery", "Fantasy", "Psychology" });
             comboBox1.Location = new Point(3, 202);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(360, 33);
@@ -319,6 +320,7 @@
             Controls.Add(panel1);
             Name = "Books";
             Padding = new Padding(20);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Books Management";
             Load += Books_Load;
             panel1.ResumeLayout(false);

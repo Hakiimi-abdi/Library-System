@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Login));
             panel1 = new Panel();
             pictureBox1 = new PictureBox();
             button1 = new Button();
@@ -92,7 +93,7 @@
             textBox2.Location = new Point(50, 201);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(300, 34);
-            textBox2.TabIndex = 4;
+            textBox2.TabIndex = 1;
             textBox2.UseSystemPasswordChar = true;
             // 
             // label3
@@ -114,7 +115,7 @@
             textBox1.Location = new Point(50, 131);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(300, 34);
-            textBox1.TabIndex = 2;
+            textBox1.TabIndex = 0;
             // 
             // label2
             // 
@@ -141,12 +142,14 @@
             // 
             // Login
             // 
+            AcceptButton = button1;
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(248, 249, 250);
             ClientSize = new Size(478, 375);
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Login";
             Padding = new Padding(20);
             StartPosition = FormStartPosition.CenterScreen;
